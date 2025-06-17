@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "",
+      "url": "https://projetodev-1.onrender.com/api-docs/",
       "description": "Acesso à documentação interativa"
     },
     {
