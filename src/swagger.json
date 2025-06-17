@@ -1,0 +1,377 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "API para Controle de Produtos",
+    "version": "2.0.0",
+    "description": "Interface RESTful que oferece funcionalidades completas para gerenciamento de produtos utilizando MongoDB. Suporta operações de criação, leitura, atualização e exclusão, além de pesquisa avançada por ID ou nome.",
+    "contact": {
+      "name": "Equipe de Suporte",
+      "email": "gabrielmonteiro12640@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "",
+      "description": "Acesso à documentação interativa"
+    },
+    {
+      "url": "",
+      "description": "URL de produção da aplicação"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Produtos",
+      "description": "Endpoints para gerenciar produtos, incluindo criação, consulta, edição e exclusão"
+    }
+  ],
+  "paths": {
+    "/produtos": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Obter lista de produtos",
+        "description": "Retorna todos os produtos registrados no sistema com seus respectivos detalhes.",
+        "operationId": "obterProdutos",
+        "responses": {
+          "200": {
+            "description": "Consulta realizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Produto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Produtos"],
+        "summary": "Registrar novo produto",
+        "description": "Cria um novo item no sistema. O campo de data de cadastro é preenchido automaticamente.",
+        "operationId": "registrarProduto",
+        "requestBody": {
+          "required": true,
+          "description": "Informações do novo produto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto adicionado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro nos dados enviados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/produtos/{id}": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Localizar produto por ID ou Nome",
+        "description": "Permite a pesquisa por ID do MongoDB ou pelo nome exato. O sistema tenta o ID primeiro; caso falhe, busca pelo nome.",
+        "operationId": "localizarProduto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do produto ou nome completo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produto não localizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Produtos"],
+        "summary": "Modificar um produto existente",
+        "description": "Altera completamente os dados de um produto usando seu ID. Todos os campos são obrigatórios.",
+        "operationId": "modificarProduto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador único do produto",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Novos dados do produto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Produto atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produto não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Produtos"],
+        "summary": "Remover produto",
+        "description": "Exclui permanentemente um produto do sistema.",
+        "operationId": "removerProduto",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do produto a ser excluído",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Produto removido com sucesso"
+          },
+          "400": {
+            "description": "ID inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produto não localizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Produto": {
+        "type": "object",
+        "description": "Modelo de dados que representa um produto registrado",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Identificador exclusivo (ObjectId do MongoDB)",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome do produto"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição detalhada"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor principal"
+          },
+          "peso": {
+            "type": "number",
+            "format": "float",
+            "description": "Peso em gramas"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Categoria do produto"
+          },
+          "preco": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor em reais"
+          },
+          "dataCadastro": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de cadastro"
+          }
+        },
+        "required": ["_id", "nome", "descricao", "cor", "peso", "tipo", "preco", "dataCadastro"],
+        "additionalProperties": false
+      },
+      "ProdutoInput": {
+        "type": "object",
+        "description": "Estrutura esperada ao criar ou atualizar um produto",
+        "properties": {
+          "nome": { "type": "string" },
+          "descricao": { "type": "string" },
+          "cor": { "type": "string" },
+          "peso": { "type": "number", "format": "float" },
+          "tipo": { "type": "string" },
+          "preco": { "type": "number", "format": "float" }
+        },
+        "required": ["nome", "descricao", "cor", "peso", "tipo", "preco"],
+        "additionalProperties": false
+      },
+      "Erro": {
+        "type": "object",
+        "description": "Formato de resposta para mensagens de erro",
+        "properties": {
+          "mensagem": {
+            "type": "string",
+            "description": "Mensagem explicativa do erro"
+          },
+          "codigo": {
+            "type": "string",
+            "description": "Código do erro (opcional)"
+          },
+          "detalhes": {
+            "type": "object",
+            "description": "Informações adicionais (opcional)"
+          }
+        },
+        "required": ["mensagem"],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Chave para autenticação via API (futura implementação)"
+      }
+    }
+  }
+}
